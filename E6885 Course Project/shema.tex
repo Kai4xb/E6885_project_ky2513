@@ -1,0 +1,100 @@
+\usetikzlibrary{arrows}
+\usetikzlibrary{decorations.markings}
+\newcommand{\mygrid}{\tikz{\draw[step=0.5cm] (0,0)  grid (0.5,1.5);}}
+
+\begin{figure}[ht!]
+\centering
+
+\resizebox{0.45\textwidth}{!}{%   % line to set size of the whole image
+\begin{tikzpicture}[
+roundnode/.style={circle, draw=black!60, fill=green!0, very thick, minimum size=10mm},
+roundnode2/.style={circle, draw=black!60, fill=black!20, very thick, minimum size=10mm},
+squarednode_st/.style={rectangle, draw=black!60, fill=green!20, very thick, minimum size=10mm},
+squarednode/.style={rectangle, draw=black!60, fill=black!20, very thick, minimum size=10mm},
+squarednode_st2/.style={rectangle, draw=black!60, very thick, minimum width=10mm, minimum height = 2cm},
+invisible/.style={rectangle , draw=black!0, fill=green!0, very thick, minimum size=10mm},
+squarednode_img/.style={rectangle, draw=black!60, fill=black!20, very thick, minimum size=10mm},
+%grid_node/.style={minimum size=.5cm-\pgflinewidth, outer sep=0pt},
+%model/.style={trapezium angle=60, minimum width=50mm, draw, thick, label=above:8cm, label=below:16cm, label=right:8cm, label=left:8cm}
+container_AE/.style={draw, rectangle, draw=green!60, dashed, inner sep=1em},
+container_Inv/.style={draw, rectangle, draw=blue, dashed, inner sep=1em},
+]
+
+
+%Nodes
+
+%first column
+\node[invisible]        (base)        {};
+\node[invisible]        (base2)        [above=of base] {};
+
+\node[invisible]        (obs)        {};
+\node[invisible]        (obs2)        [above=of obs] {};
+
+\node[roundnode]        (hidden_obs2)        [on grid,above=of base2] {$I_{t+1}$};
+\node[roundnode]        (hidden_obs)        [on grid,below=of base] {$I_t$};
+\node[invisible]        (hidden_obs3)        [on grid,above=of base] {};
+
+%Second column
+%\node[squarednode_st]      (state)        [right=of obs]{$s_t$};
+
+%\node[rectangle, draw, inner sep=0] {\mygrid}  (state) [right=of obs];
+
+\node[invisible]        (hidden_state)        [right=of hidden_obs3,draw] {};
+\node[invisible]        (hidden_state)        [on grid,right=of hidden_state,draw] {};
+
+\node[squarednode_st2] (anode) [right=of hidden_obs,draw, pattern=horizontal lines light gray]{};
+%\node[squarednode_st] (state) [on grid,above=of anode,draw, pattern=checkerboard light gray]{};
+\node[] (label) [on grid, above=0.8cm of anode]{$s_{t}$};
+
+
+\node[squarednode_st2] (anode2) [right=of hidden_obs2,draw, pattern=horizontal lines light gray]{};
+%\node[squarednode_st] (state2) [on grid,above=of anode2,draw, pattern=checkerboard light gray]{};
+\node[] (label2) [on grid, above=0.8cm of anode2]{$s_{t+1}$};
+
+
+% third column
+% \node[squarednode]        (recon_rew)        [right=of hidden_state,draw, pattern=horizontal lines light gray] {$\hat{r}_t$};
+
+\node[invisible]        (center3)        [right=of hidden_state] {};
+
+\node[squarednode]        (recon_act)        [on grid, above=of center3, draw] {$\hat{a}_t$};
+\node[squarednode]        (recon_img)        [on grid,below=of center3,draw] {$\hat{I}_t$};
+
+
+% forth column
+\node[roundnode]        (img)        [right=of recon_img,draw] {$I_t$};
+% \node[roundnode]        (rew)        [right=of recon_rew,draw] {$r_t$};
+\node[roundnode]        (act)        [right=of recon_act,draw] {$a_t$};
+
+% fifth column
+\node[invisible]        (L_img)        [right=of img,draw] {$\mathcal{L}_{Reconstruction}$};
+% \node[invisible]        (L_rew)        [right=of rew,draw] {$\mathcal{L}_{Reward}$};
+\node[invisible]        (L_act)        [right=of act,draw] {$\mathcal{L}_{Inverse}$};
+
+
+% arrows
+
+\draw[-{Latex[length=3mm,width=2mm]}] (hidden_obs.east) -- (anode.west);
+\draw[-{Latex[length=3mm,width=2mm]}] (hidden_obs2.east) -- (anode2.west);
+
+% \draw[-{Latex[length=3mm,width=2mm]}, dashed] (anode.east) -- (recon_rew.west);
+% \draw[-{Latex[length=3mm,width=2mm]}, dashed] (anode2.east) -- (recon_rew.west);
+
+\draw[-{Latex[length=3mm,width=2mm]}] (anode2.east) -- (recon_act.west);
+\draw[-{Latex[length=3mm,width=2mm]}] (anode.east) -- (recon_act.west);
+
+\draw[-{Latex[length=3mm,width=2mm]}] (anode.east) -- (recon_img.west);
+
+
+% containers
+%\node[container_Inv, fit=(recon_rew) (rew)] (ae) {};
+\node[container_AE, fit=(recon_act) (act)] (fwd) {};
+\node[container_Inv, fit=(recon_img) (img)] (ae) {};
+
+\end{tikzpicture}
+}
+
+\caption{\textit{SRL Combination} model: combines the prediction of an image $I$'s reconstruction loss and an inverse dynamic model loss in a state representation $s$. Arrows represent inference, dashed frames represent losses computations, rectangles are state representations, circles are real observed data, and squares are model predictions, $t$ represents the timestep}
+
+\label{fig:split-model}
+\end{figure}
